@@ -7,6 +7,24 @@ use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 use url::{Url};
+use serde::{Serialize, Deserialize};
+use reqwest::header::CONTENT_TYPE;
+
+
+//"{\"total\":2,\"rowCount\":-1,\"current\":1,\"rows\":[{\"ip\":\"1.1.1.1\"},{\"ip\":\"1.2.3.67\"}]}"
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Obj {
+  total: i32,
+  rowCount: i32,
+  current: i32,
+  rows: Vec<Ips>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Ips {
+  ip: String,
+}
 
 fn main() -> Result<(), Box<dyn Error>> {
 
@@ -46,6 +64,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         debug!("{:?}",res.unwrap());
         //TODO: Add responds debug message
       },
+      /*
+        Note:  Flush API call is not persistant, rewrote to append all listed IP's to 'delete' 
+      */
       "flush" | "list" => {
         let url_path = build_url_path(&command,&alias);
         map.insert("alias", alias);
@@ -53,12 +74,15 @@ fn main() -> Result<(), Box<dyn Error>> {
           println!("{}: {}", key, value);
         }
         debug!("Sending to {} as {}", url_path, user_name);
-        let res = client.post(url_path)
+        let res: Obj = client.post(url_path)
         .json(&map)
         .basic_auth(user_name, password)
-        .send();
-        debug!("{:?}",res.unwrap());
-        //TODO: Add responds debug message
+        .header(CONTENT_TYPE, "application/json")
+        .send()?
+        .json()?;
+        for row in &res.rows {
+          println!("{}", row.ip);
+        }
       },
       
       &_ => panic!("Unknown command given: {}", command)
