@@ -1,0 +1,13 @@
+  //let res= client.post("https://opnsense.abelswork.net/api/firewall/filter/apply")
+  //  .basic_auth(user_name, password)
+  //  .header(CONTENT_TYPE, "application/json")
+  //  .send()?
+  //  .text()?;
+
+  // apply via API depends on the os-firewall Firewall API supplemental package
+//requests.post("%s/api/firewall/filter/savepoint" % remote_uri, auth=(api_key, api_secret), verify=False)
+  //let res= client.post("https://opnsense.abelswork.net/api/firewall/filter/savepoint")
+  //  .basic_auth(user_name, password)
+  //  .header(CONTENT_TYPE, "application/json")
+  //  .send()?
+  //  .text()?;
